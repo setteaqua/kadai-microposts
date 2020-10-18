@@ -2,7 +2,25 @@
 
 @section("content")
     @if (Auth::check())
-        {{ Auth::user()->name }}
+        <div class="row">
+            <aside class="col-sm-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">{{Auth::user()->naem }}</h3>
+                    </div>
+                    <div class="card-body">
+                        {{--認証済みユーザのメールアドレスをもとにFravatarを取得して表示--}}
+                        <img class="rouned img-fluid" src="{{ Gravatar::get(Auth::user()->email,["size"=>500]) }}" alt="">
+                    </div>
+                </div>
+            </aside>
+            <div class="col-dm-8">
+                {{--投稿フォーム--}}
+                @include("microposts.form")
+                {{--投稿一覧--}}
+                @include("microposts.microposts")
+            </div>
+        </div>
     @else
         <div class="center jumbotron">
             <div class="text-center">
