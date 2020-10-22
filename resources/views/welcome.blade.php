@@ -6,7 +6,7 @@
             <aside class="col-sm-4">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">{{Auth::user()->naem }}</h3>
+                        <h3 class="card-title">{{Auth::user()->name }}</h3>
                     </div>
                     <div class="card-body">
                         {{--認証済みユーザのメールアドレスをもとにFravatarを取得して表示--}}
