@@ -62,7 +62,7 @@ class User extends Authenticatable
     //このユーザに関係するモデルの件数をロードする
     public function loadRelationshipCounts()
     {
-        $this->loadCount("microposts","followings", "followers");
+        $this->loadCount("microposts","followings", "followers","favorites");
     }
     
     //$user_idで指定されたユーザをフォローする
@@ -135,4 +135,71 @@ class User extends Authenticatable
         return Micropost::whereIn("user_id",$userIds);
         
     }
+    
+     //お気に入り登録の設定
+     
+     
+    //このユーザがお気に入り登録した投稿（Micropostモデルとの関係を定義）
+    public function favorites()
+    {
+        return $this->belongsToMany(Micropost::class,"favorites","user_id","micropost_id")->withTimestamps();
+    }
+    
+    
+     //$micropostIdで指定された投稿をお気に入り登録する
+    //@param int $micropostId
+    //@return bool
+    
+    public  function favorite($micropostId)
+    {
+        
+        //すでにお気に入り登録しているかの確認
+        $exist = $this->check_favorite($micropostId);
+
+        
+        if($exist != null){
+            //すでにフォローしていれば何もしない
+           return false;
+        }else{
+            //未お気に入り登録であれば登録する
+            $this->favorites()->attach($micropostId);
+            return true;
+        }
+    }
+    
+     //指定された$micropostIdの投稿をこのユーザがお気に入り登録中であるか調べる。フォロー中ならtrueを返す
+    //@param int $micropostId
+    //@return bool
+    
+    public function check_favorite($micropostId)
+    {
+        //お気に入り登録した投稿の中に$micropost_idのものが存在するか
+        return $this->favorites()->where("micropost_id",$micropostId)->exists();
+    }
+    
+    
+    
+    
+    
+    //$user_idで指定されたユーザをアンフォローする
+    //@param int $userId
+    //@return bool
+    
+    public  function unfavorite($micropostId)
+    {
+        
+        //すでにお気に入り登録しているかの確認
+        $exist = $this->check_favorite($micropostId);
+        
+        if($exist != null){
+            //すでにお気に入り登録していれば登録解除
+            $this->favorites()->detach($micropostId);
+            return true;
+            
+        }else{
+            //未フォローであれば何もしない
+             return false;
+        }
+    }
+    
 }
